@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>シンプルメモ</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #e8f7fc;
+    --panel: #ffffff;
+    --text: #14424f;
+    --muted: #5b93a3;
+    --accent: #29b6d8;
+    --accent-hover: #1ea6c9;
+    --danger: #f4756b;
+    --border: #cdeef7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f2530;
+      --panel: #16323f;
+      --text: #e3f6fc;
+      --muted: #7fb3c2;
+      --accent: #4fd1ea;
+      --accent-hover: #6bdaf0;
+      --danger: #f4938b;
+      --border: #234957;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .app {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 16px;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 0;
+    color: var(--accent);
+  }
+  .btn-menu {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .btn-menu:hover {
+    background: var(--border);
+  }
+  .composer {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 20px;
+  }
+  .edit-badge {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .composer textarea {
+    width: 100%;
+    min-height: 70px;
+    resize: vertical;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    line-height: 1.5;
+  }
+  .composer-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-size: 14px;
+    transition: background 0.15s ease;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .memo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .memo {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  .memo:hover {
+    border-color: var(--accent);
+  }
+  .memo p {
+    margin: 0 0 8px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.5;
+  }
+  .memo-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .memo-date {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .btn-delete {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+  .btn-delete:hover {
+    color: var(--danger);
+  }
+  .btn-cancel {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 8px 4px;
+  }
+  .btn-cancel:hover {
+    color: var(--text);
+  }
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 40px 0;
+    font-size: 14px;
+  }
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 37, 48, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+  }
+  .overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 320px;
+    max-width: 85vw;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    box-shadow: 4px 0 16px rgba(15, 37, 48, 0.15);
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .sidebar-header span {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--accent);
+  }
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--muted);
+    line-height: 1;
+    padding: 4px;
+  }
+  .btn-close:hover {
+    color: var(--text);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="btn-menu" id="menu-btn" aria-label="保存したメモを開く">&#9776;</button>
+    <h1>シンプルメモ</h1>
+  </header>
+  <div class="composer">
+    <div class="edit-badge" id="edit-badge" hidden>メモを編集中</div>
+    <textarea id="memo-input" placeholder="メモを入力..."></textarea>
+    <div class="composer-footer">
+      <button class="btn-cancel" id="cancel-edit-btn" hidden>キャンセル</button>
+      <button class="btn-primary" id="add-btn" disabled>追加</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span>保存したメモ</span>
+    <button class="btn-close" id="close-btn" aria-label="閉じる">&times;</button>
+  </div>
+  <div class="memo-list" id="memo-list"></div>
+</aside>
+
+<script>
+  const STORAGE_KEY = "simple-memo-app";
+  const input = document.getElementById("memo-input");
+  const addBtn = document.getElementById("add-btn");
+  const cancelEditBtn = document.getElementById("cancel-edit-btn");
+  const editBadge = document.getElementById("edit-badge");
+  const list = document.getElementById("memo-list");
+  const menuBtn = document.getElementById("menu-btn");
+  const closeBtn = document.getElementById("close-btn");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+
+  function openSidebar() {
+    sidebar.classList.add("open");
+    overlay.classList.add("open");
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("open");
+  }
+
+  menuBtn.addEventListener("click", openSidebar);
+  closeBtn.addEventListener("click", closeSidebar);
+  overlay.addEventListener("click", closeSidebar);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSidebar();
+  });
+
+  function loadMemos() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveMemos(memos) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(memos));
+  }
+
+  function formatDate(ts) {
+    const d = new Date(ts);
+    return d.toLocaleString("ja-JP", {
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit"
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  let memos = loadMemos();
+  let editingMemoId = null;
+
+  function render() {
+    if (memos.length === 0) {
+      list.innerHTML = '<div class="empty">まだメモがありません</div>';
+      return;
+    }
+    list.innerHTML = memos
+      .map(
+        (memo) => `
+        <div class="memo" data-id="${memo.id}">
+          <p>${escapeHtml(memo.text)}</p>
+          <div class="memo-meta">
+            <span class="memo-date">${formatDate(memo.createdAt)}</span>
+            <button class="btn-delete" data-id="${memo.id}">削除</button>
+          </div>
+        </div>
+      `
+      )
+      .join("");
+  }
+
+  function resetComposer() {
+    editingMemoId = null;
+    input.value = "";
+    addBtn.disabled = true;
+    addBtn.textContent = "追加";
+    editBadge.hidden = true;
+    cancelEditBtn.hidden = true;
+  }
+
+  function loadMemoForEdit(id) {
+    const memo = memos.find((m) => m.id === id);
+    if (!memo) return;
+    editingMemoId = id;
+    input.value = memo.text;
+    addBtn.disabled = false;
+    addBtn.textContent = "更新";
+    editBadge.hidden = false;
+    cancelEditBtn.hidden = false;
+    closeSidebar();
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+  }
+
+  function submitComposer() {
+    const text = input.value.trim();
+    if (!text) return;
+    if (editingMemoId) {
+      const idx = memos.findIndex((m) => m.id === editingMemoId);
+      if (idx !== -1) {
+        const [memo] = memos.splice(idx, 1);
+        memo.text = text;
+        memo.createdAt = Date.now();
+        memos.unshift(memo);
+      }
+    } else {
+      memos.unshift({
+        id: crypto.randomUUID(),
+        text,
+        createdAt: Date.now()
+      });
+    }
+    saveMemos(memos);
+    resetComposer();
+    render();
+  }
+
+  function deleteMemo(id) {
+    memos = memos.filter((m) => m.id !== id);
+    saveMemos(memos);
+    if (id === editingMemoId) resetComposer();
+    render();
+  }
+
+  input.addEventListener("input", () => {
+    addBtn.disabled = input.value.trim().length === 0;
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      submitComposer();
+    } else if (e.key === "Escape" && editingMemoId) {
+      resetComposer();
+    }
+  });
+
+  addBtn.addEventListener("click", submitComposer);
+  cancelEditBtn.addEventListener("click", resetComposer);
+
+  list.addEventListener("click", (e) => {
+    const deleteBtn = e.target.closest(".btn-delete");
+    if (deleteBtn) {
+      deleteMemo(deleteBtn.dataset.id);
+      return;
+    }
+    const memoEl = e.target.closest(".memo");
+    if (memoEl) {
+      loadMemoForEdit(memoEl.dataset.id);
+    }
+  });
+
+  render();
+</script>
+</body>
+</html>

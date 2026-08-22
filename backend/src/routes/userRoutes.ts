@@ -1,0 +1,21 @@
+import { Router } from "express";
+import {
+  getMe,
+  updateMe,
+  adminListUsers,
+  adminDeleteUser,
+  adminSetUserStatus,
+  adminSetUserPassword,
+} from "../controllers/userController";
+import { requireAuth, requireAdmin } from "../middleware/authMiddleware";
+
+export const userRouter = Router();
+
+userRouter.get("/me", requireAuth, getMe); // requireAuth を経由してからでないと getMe に到達しない
+userRouter.patch("/me", requireAuth, updateMe);
+
+// ここから下は管理者専用。requireAuthでログインを確認したあと、requireAdminでroleをチェックする
+userRouter.get("/", requireAuth, requireAdmin, adminListUsers);
+userRouter.delete("/:id", requireAuth, requireAdmin, adminDeleteUser);
+userRouter.patch("/:id/suspend", requireAuth, requireAdmin, adminSetUserStatus);
+userRouter.patch("/:id/password", requireAuth, requireAdmin, adminSetUserPassword);

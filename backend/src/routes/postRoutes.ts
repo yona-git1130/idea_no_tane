@@ -1,0 +1,21 @@
+import { Router } from "express";
+import { listPosts, getPost, createPost, updatePost, deletePost } from "../controllers/postController";
+import { getRanking } from "../controllers/reactionController";
+import { requireAuth, requireActive } from "../middleware/authMiddleware";
+import { postCommentsRouter } from "./commentRoutes";
+import { postReactionsRouter } from "./reactionRoutes";
+
+export const postRouter = Router();
+
+// "/ranking" は "/:id" より前に書く。後ろに書くと "ranking" という文字列が :id として
+// 解釈されてしまい(Expressは上から順にルートを照合する)、getPost に渡ってしまう。
+postRouter.get("/ranking", getRanking);
+
+postRouter.get("/", listPosts);
+postRouter.get("/:id", getPost);
+postRouter.post("/", requireAuth, requireActive, createPost);
+postRouter.put("/:id", requireAuth, requireActive, updatePost);
+postRouter.delete("/:id", requireAuth, requireActive, deletePost);
+
+postRouter.use("/:id/comments", postCommentsRouter);
+postRouter.use("/:id/reactions", postReactionsRouter);

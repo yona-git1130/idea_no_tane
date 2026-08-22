@@ -1,0 +1,84 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { upsertReactionRequest, deleteReactionRequest, getMyReactionRequest } from "../api/reactions";
+import { REACTION_TYPES, REACTION_LABELS } from "../types/reaction";
+import type { ReactionType, ReactionCounts } from "../types/reaction";
+
+export function ReactionBar({
+  postId,
+  initialCounts,
+  isOwnPost = false,
+  showCounts = true,
+}: {
+  postId: number;
+  initialCounts: ReactionCounts;
+  // 自分自身の投稿では、自分にリアクションを付けられないようにボタンを無効化する
+  isOwnPost?: boolean;
+  // 一覧画面など、件数を出さずにボタンだけ見せたい場所ではfalseにする
+  showCounts?: boolean;
+}) {
+  const { user } = useAuth();
+  const [counts, setCounts] = useState(initialCounts);
+  const [myReaction, setMyReaction] = useState<ReactionType | null>(null);
+  const [pending, setPending] = useState(false);
+
+  useEffect(() => {
+    if (!user || isOwnPost) {
+      setMyReaction(null);
+      return;
+    }
+    getMyReactionRequest(postId).then(({ reactionType }) => setMyReaction(reactionType));
+  }, [postId, user, isOwnPost]);
+
+  // 自分の投稿にはそもそもリアクションを付けられないので、ボタン自体を表示しない
+  // (無効化されたボタンを出すより、「対象外の機能である」ことが分かりやすいため)
+  if (isOwnPost) {
+    return null;
+  }
+
+  async function handleClick(type: ReactionType) {
+    if (!user || pending) return;
+    setPending(true);
+    try {
+      if (myReaction === type) {
+        // 押した状態のボタンをもう一度押したら、リアクションを取り消す
+        await deleteReactionRequest(postId);
+        setCounts((prev) => ({ ...prev, [type]: Math.max(0, prev[type] - 1) }));
+        setMyReaction(null);
+      } else {
+        // 別の種類を押したら上書き。画面上のカウントも「元の種類-1、新しい種類+1」にする
+        await upsertReactionRequest(postId, type);
+        setCounts((prev) => {
+          const next = { ...prev, [type]: prev[type] + 1 };
+          if (myReaction) {
+            next[myReaction] = Math.max(0, next[myReaction] - 1);
+          }
+          return next;
+        });
+        setMyReaction(type);
+      }
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <div className="reaction-row">
+      {REACTION_TYPES.map((type) => {
+        const active = myReaction === type;
+        return (
+          <button
+            key={type}
+            onClick={() => handleClick(type)}
+            disabled={!user || pending}
+            title={user ? REACTION_LABELS[type].label : "ログインするとリアクションできます"}
+            className={`reaction-btn${active ? " active" : ""}`}
+          >
+            <span>{REACTION_LABELS[type].emoji}</span>
+            {showCounts && <span>{counts[type]}</span>}
+          </button>
+        );
+      })}
+    </div>
+  );
+}

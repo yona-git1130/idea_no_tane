@@ -1,0 +1,8 @@
+# 各パッケージ配下にも .gitignore はあるが、ルート直下の取りこぼしを防ぐための保険
+node_modules
+dist
+.env
+.DS_Store
+
+# Claude Codeのローカル設定(このマシン固有の許可設定などを含むため共有しない)
+.claude/settings.local.json

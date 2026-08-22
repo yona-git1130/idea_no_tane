@@ -1,0 +1,607 @@
+/* ==========================================================================
+   デザイントークン(色・余白などをまとめた変数)
+   ダークモードには対応せず、常にこのライトモードの配色を使う。
+   色を使う側(下の各クラス)は var(--text) のように変数名だけを参照する。
+   ========================================================================== */
+:root {
+  --bg: #ffffed;
+  --panel: #ffffff;
+  --panel-hover: #faf9fd;
+  --text: #211f2e;
+  --muted: #6b6b7a;
+  --border: #e2e0ea;
+  --accent: #8ae68a;
+  --accent-hover: #74d374;
+  --accent-ink: #1f7a3d;
+  --accent-soft: rgba(138, 230, 138, 0.35);
+  --accent-contrast: #14301c;
+  --danger: #c53939;
+  --danger-soft: rgba(197, 57, 57, 0.1);
+  --success: #237a4b;
+  --success-soft: rgba(35, 122, 75, 0.12);
+  --shadow: 0 1px 2px rgba(20, 18, 33, 0.04), 0 4px 12px rgba(20, 18, 33, 0.05);
+
+  /* light のみ固定。auto にすると端末側がダークモードのとき、ブラウザ標準UI
+     (スクロールバーやフォームの既定色など)が暗色に切り替わってしまうため。 */
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Segoe UI", sans-serif;
+}
+
+/* ==========================================================================
+   リセット・基本スタイル
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2 {
+  line-height: 1.4;
+  margin: 0;
+}
+
+a {
+  color: var(--accent-ink);
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+input,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+input:focus,
+textarea:focus,
+button:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 1px;
+}
+
+/* ==========================================================================
+   レイアウト
+   ========================================================================== */
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.page.wide {
+  max-width: 780px;
+}
+
+/* ==========================================================================
+   ヘッダー
+   ========================================================================== */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.site-header .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.site-header nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.site-header nav a {
+  text-decoration: none;
+  color: var(--text);
+}
+
+.site-header nav a:hover {
+  color: var(--accent-ink);
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  padding: 0;
+}
+
+.user-menu-trigger:hover {
+  background: var(--panel-hover);
+}
+
+.user-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  z-index: 20;
+}
+
+.user-menu-name {
+  padding: 8px 10px 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.user-menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  text-decoration: none;
+  text-align: left;
+  font-size: 14px;
+}
+
+.user-menu-item:hover {
+  background: var(--panel-hover);
+}
+
+/* ==========================================================================
+   ボタン
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-weight: 600;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--panel-hover);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-danger {
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger-soft);
+}
+
+.btn-text {
+  border: none;
+  background: none;
+  padding: 4px 2px;
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.btn-text.danger {
+  color: var(--danger);
+}
+
+/* 横並びのflexコンテナ内で、幅をテキスト分だけに縮める(親のstretchを打ち消す) */
+.btn-fit {
+  align-self: flex-start;
+}
+
+/* ==========================================================================
+   フォーム
+   ========================================================================== */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.field input,
+.field textarea {
+  color: var(--text);
+  font-size: 15px;
+}
+
+/* トグルボタンを入力欄の上に重ねると、クリック位置によっては
+   ボタン側がクリックを奪ってしまい(カーソル位置指定・右クリック貼り付けなど)、
+   入力欄本体を正しく操作できないことがあるため、隣に並べる形にしている */
+.password-input {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.password-input input {
+  flex: 1;
+  min-width: 0;
+}
+
+.password-toggle {
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.password-toggle:hover {
+  background: var(--panel-hover);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tag-checklist {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.tag-checklist label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+fieldset.tag-fieldset {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin: 0;
+}
+
+fieldset.tag-fieldset legend {
+  padding: 0 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   カード(投稿一覧・ランキング)
+   ========================================================================== */
+.card {
+  display: block;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  transition: border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--accent-ink);
+}
+
+/* カード内の「クリックすると投稿詳細に飛ぶ」領域。
+   リアクションボタンはこの外に置き、リンクのクリック領域とは分離している */
+.card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: var(--text);
+}
+
+/* 投稿詳細画面: 本文全体を一覧のカードと同じ白背景+枠線で囲む */
+.post-detail-card {
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.card-excerpt {
+  margin: 0 0 10px;
+  color: var(--muted);
+}
+
+.card-meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ==========================================================================
+   タグ・バッジ
+   ========================================================================== */
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.tag-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.filter-btn {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 14px;
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   リアクションボタン
+   ========================================================================== */
+.reaction-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.reaction-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 注目のタネ画面のように、操作できないただの表示バッジとして使うときに枠を消す */
+.reaction-btn.no-border {
+  border-color: transparent;
+  background: none;
+  padding: 7px 4px;
+}
+
+.reaction-btn.active {
+  border-color: var(--accent-ink);
+  border-width: 2px;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+.reaction-btn:disabled {
+  cursor: default;
+}
+
+/* ==========================================================================
+   コメント
+   ========================================================================== */
+.comment {
+  border-top: 1px solid var(--border);
+  padding: 14px 0;
+}
+
+.comment-body {
+  margin: 0 0 6px;
+  white-space: pre-wrap;
+}
+
+.comment-meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ==========================================================================
+   ランキング
+   ========================================================================== */
+.rank-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  margin-bottom: 12px;
+}
+
+.rank-number {
+  font-size: 20px;
+  font-weight: 700;
+  width: 32px;
+  text-align: center;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rank-number.top {
+  color: var(--accent-ink);
+}
+
+.rank-excerpt {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ==========================================================================
+   テーブル(管理者画面)
+   ========================================================================== */
+.table-scroll {
+  overflow-x: auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 4px 16px;
+}
+
+table.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.admin-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.status-pill {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.status-pill.suspended {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* ==========================================================================
+   汎用テキスト
+   ========================================================================== */
+.error-text {
+  color: var(--danger);
+  margin: 0;
+}
+
+.muted-text {
+  color: var(--muted);
+}
+
+.empty-text {
+  color: var(--muted);
+  padding: 12px 0;
+}
+
+/* ==========================================================================
+   レスポンシブ
+   ========================================================================== */
+@media (max-width: 480px) {
+  .page {
+    padding: 16px 12px 48px;
+  }
+
+  .site-header {
+    padding: 12px 16px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+}
