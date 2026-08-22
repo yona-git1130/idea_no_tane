@@ -60,7 +60,14 @@ export async function getRanking(tagId: number | undefined, limit = 10): Promise
     values
   );
 
-  return result.rows.map((row) => ({
+  type ReactionRankingRow = {
+    post_id: number;
+    title: string;
+    body: string;
+    counts: ReactionCounts;
+  };
+
+  return result.rows.map((row: ReactionRankingRow) => ({
     post_id: row.post_id,
     title: row.title,
     body: row.body,
