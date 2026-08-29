@@ -46,9 +46,11 @@ export async function getRanking(req: Request, res: Response) {
     }
   }
 
+  const achievedOnly = req.query.achieved === "true";
+
   // 存在しないtagIdを渡された場合は、JOINの時点で該当なし(空配列)になるだけなので
   // ここで個別にタグの存在チェックはしていない
-  const ranking = await reactionRepository.getRanking(tagId);
+  const ranking = await reactionRepository.getRanking(tagId, undefined, achievedOnly);
   res.json({ ranking });
 }
 

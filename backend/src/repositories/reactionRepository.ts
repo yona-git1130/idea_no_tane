@@ -32,30 +32,63 @@ export async function deleteReaction(params: { postId: number; userId: number })
 // LEFT JOINなので、リアクションが1件も付いていない投稿も(件数すべて0として)一覧には残る。
 // みんなのタネ画面のカードと同じ「種類ごとの絵文字+件数」で表示できるよう、
 // 種類別の内訳(counts)も1回のクエリでまとめて取得する。
-export async function getRanking(tagId: number | undefined, limit = 10): Promise<RankingEntry[]> {
+export async function getRanking(
+  tagId: number | undefined,
+  limit = 10,
+  achievedOnly = false
+): Promise<RankingEntry[]> {
   const filterClauses = REACTION_TYPES.map(
     (type) => `'${type}', COUNT(*) FILTER (WHERE r.reaction_type = '${type}')`
   ).join(", ");
 
-  // tagIdがある時だけpost_tagsで絞り込む。「すべて」の時は絞り込み条件なしで全投稿が対象になる
-  const tagJoin = tagId !== undefined ? `JOIN post_tags pt ON pt.post_id = p.id AND pt.tag_id = $1` : "";
-  const values = tagId !== undefined ? [tagId, limit] : [limit];
-  const limitPlaceholder = tagId !== undefined ? "$2" : "$1";
+  // 管理者に削除された投稿は、みんなのリストには常に出さない
+  const conditions: string[] = ["p.deleted_by_admin = false"];
+  const values: unknown[] = [];
+
+  if (tagId !== undefined) {
+    values.push(tagId);
+    // JOINで絞り込むと、後述のタグ集約(json_agg)がその1タグだけになってしまう
+    // (投稿についている他のタグが消えてしまう)ため、EXISTSで絞り込みだけを行う。
+    // postRepository.listPosts と同じ考え方。
+    conditions.push(
+      `EXISTS (SELECT 1 FROM post_tags pt2 WHERE pt2.post_id = p.id AND pt2.tag_id = $${values.length})`
+    );
+  }
+  if (achievedOnly) {
+    conditions.push("p.is_achieved = true");
+  }
+  const where = `WHERE ${conditions.join(" AND ")}`;
+
+  values.push(limit);
+  const limitPlaceholder = `$${values.length}`;
 
   const result = await pool.query<{
     post_id: number;
     title: string;
     body: string;
+    is_achieved: boolean;
+    author_id: number;
+    tags: { id: number; name: string; icon: string }[];
     counts: ReactionCounts;
   }>(
     `SELECT
-       p.id AS post_id, p.title, p.body,
-       json_build_object(${filterClauses}) AS counts
+       p.id AS post_id, p.title, p.body, p.is_achieved, p.user_id AS author_id,
+       COALESCE(
+         json_agg(json_build_object('id', t.id, 'name', t.name, 'icon', t.icon))
+           FILTER (WHERE t.id IS NOT NULL),
+         '[]'
+       ) AS tags,
+       (
+         SELECT json_build_object(${filterClauses})
+         FROM reactions r
+         WHERE r.post_id = p.id
+       ) AS counts
      FROM posts p
-     ${tagJoin}
-     LEFT JOIN reactions r ON r.post_id = p.id
+     LEFT JOIN post_tags pt ON pt.post_id = p.id
+     LEFT JOIN tags t ON t.id = pt.tag_id
+     ${where}
      GROUP BY p.id
-     ORDER BY COUNT(r.id) DESC
+     ORDER BY (SELECT COUNT(*) FROM reactions r2 WHERE r2.post_id = p.id) DESC
      LIMIT ${limitPlaceholder}`,
     values
   );
@@ -64,6 +97,9 @@ export async function getRanking(tagId: number | undefined, limit = 10): Promise
     post_id: number;
     title: string;
     body: string;
+    is_achieved: boolean;
+    author_id: number;
+    tags: { id: number; name: string; icon: string }[];
     counts: ReactionCounts;
   };
 
@@ -72,6 +108,9 @@ export async function getRanking(tagId: number | undefined, limit = 10): Promise
     title: row.title,
     body: row.body,
     counts: row.counts,
+    is_achieved: row.is_achieved,
+    author_id: row.author_id,
+    tags: row.tags,
   }));
 }
 

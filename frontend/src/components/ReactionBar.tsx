@@ -9,6 +9,7 @@ export function ReactionBar({
   initialCounts,
   isOwnPost = false,
   showCounts = true,
+  hideForOwnPost = true,
 }: {
   postId: number;
   initialCounts: ReactionCounts;
@@ -16,6 +17,9 @@ export function ReactionBar({
   isOwnPost?: boolean;
   // 一覧画面など、件数を出さずにボタンだけ見せたい場所ではfalseにする
   showCounts?: boolean;
+  // 自分の投稿のとき、何も表示しない(true, 従来の挙動)か、
+  // 押せないバッジとして件数だけ表示する(false)かを選べる
+  hideForOwnPost?: boolean;
 }) {
   const { user } = useAuth();
   const [counts, setCounts] = useState(initialCounts);
@@ -30,10 +34,23 @@ export function ReactionBar({
     getMyReactionRequest(postId).then(({ reactionType }) => setMyReaction(reactionType));
   }, [postId, user, isOwnPost]);
 
-  // 自分の投稿にはそもそもリアクションを付けられないので、ボタン自体を表示しない
-  // (無効化されたボタンを出すより、「対象外の機能である」ことが分かりやすいため)
+  // 自分の投稿にはそもそもリアクションを付けられない。
+  // hideForOwnPost=true(既定)なら何も出さず、falseなら「他の人が押した件数」だけを
+  // 操作できないバッジとして見せる(みんなのリストで使う)。
   if (isOwnPost) {
-    return null;
+    if (hideForOwnPost) {
+      return null;
+    }
+    return (
+      <div className="reaction-row">
+        {REACTION_TYPES.map((type) => (
+          <span key={type} className="reaction-btn no-border">
+            <span>{REACTION_LABELS[type].emoji}</span>
+            <span>{counts[type]}</span>
+          </span>
+        ))}
+      </div>
+    );
   }
 
   async function handleClick(type: ReactionType) {

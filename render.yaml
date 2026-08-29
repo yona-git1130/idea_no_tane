@@ -4,7 +4,7 @@
 # sync: false の項目は秘密情報なので、Render側の画面で値を入力する(このファイルには書かない)。
 services:
   - type: web
-    name: ideaboard-backend
+    name: mirai-list-backend
     runtime: node
     plan: free
     rootDir: backend

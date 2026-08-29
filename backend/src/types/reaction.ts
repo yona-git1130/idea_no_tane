@@ -5,6 +5,12 @@ export type ReactionType = (typeof REACTION_TYPES)[number];
 
 export type ReactionCounts = Record<ReactionType, number>;
 
+export type RankingTag = {
+  id: number;
+  name: string;
+  icon: string;
+};
+
 // タグ別ランキング1件分。みんなのタネ画面のカードと同じ「種類ごとの絵文字+件数」で
 // 表示できるよう、種類別の内訳(counts)を持たせている。並び順は合計件数の多い順。
 export type RankingEntry = {
@@ -12,4 +18,8 @@ export type RankingEntry = {
   title: string;
   body: string;
   counts: ReactionCounts;
+  is_achieved: boolean;
+  // リアクションボタンを押せるのは他人の投稿だけなので、本人判定に使う
+  author_id: number;
+  tags: RankingTag[];
 };

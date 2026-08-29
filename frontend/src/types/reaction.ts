@@ -4,11 +4,11 @@ export type ReactionType = (typeof REACTION_TYPES)[number];
 export type ReactionCounts = Record<ReactionType, number>;
 
 export const REACTION_LABELS: Record<ReactionType, { emoji: string; label: string }> = {
-  empathy: { emoji: "🤝", label: "共感" },
-  like: { emoji: "👍", label: "いいね" },
+  empathy: { emoji: "🔥", label: "共感" },
+  like: { emoji: "💪", label: "いいね" },
   great: { emoji: "👏", label: "素晴らしい" },
-  funny: { emoji: "😂", label: "面白い" },
-  thoughtful: { emoji: "🤔", label: "考えさせられる" },
+  funny: { emoji: "✨", label: "面白い" },
+  thoughtful: { emoji: "❤️", label: "考えさせられる" },
 };
 
 export const EMPTY_REACTION_COUNTS: ReactionCounts = {

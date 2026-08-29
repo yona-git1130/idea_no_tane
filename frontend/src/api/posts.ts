@@ -1,9 +1,12 @@
 import { apiFetch } from "./client";
 import type { Post } from "../types/post";
 
-export function listPostsRequest(tagId?: number) {
-  const query = tagId !== undefined ? `?tagId=${tagId}` : "";
-  return apiFetch<{ posts: Post[] }>(`/posts${query}`);
+export function listPostsRequest(params: { tagId?: number; achievedOnly?: boolean } = {}) {
+  const search = new URLSearchParams();
+  if (params.tagId !== undefined) search.set("tagId", String(params.tagId));
+  if (params.achievedOnly) search.set("achieved", "true");
+  const query = search.toString();
+  return apiFetch<{ posts: Post[] }>(`/posts${query ? `?${query}` : ""}`);
 }
 
 export function getPostRequest(id: number) {
@@ -29,4 +32,11 @@ export function updatePostRequest(
 
 export function deletePostRequest(id: number) {
   return apiFetch<void>(`/posts/${id}`, { method: "DELETE" });
+}
+
+export function setPostAchievedRequest(id: number, achieved: boolean) {
+  return apiFetch<{ post: Post }>(`/posts/${id}/achieved`, {
+    method: "PATCH",
+    body: JSON.stringify({ achieved }),
+  });
 }

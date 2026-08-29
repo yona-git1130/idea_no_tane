@@ -42,13 +42,20 @@ export function PostForm() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+    // タグは必須(タイトルはinputのrequiredで担保、コメントは任意項目)
+    if (selectedTagId === null) {
+      setError("タグを選択してください");
+      return;
+    }
     setSubmitting(true);
     try {
       const params = { title, body, tagIds: selectedTagId !== null ? [selectedTagId] : [] };
-      const { post } = isEdit
-        ? await updatePostRequest(Number(id), params)
-        : await createPostRequest(params);
-      navigate(`/posts/${post.id}`);
+      if (isEdit) {
+        await updatePostRequest(Number(id), params);
+      } else {
+        await createPostRequest(params);
+      }
+      navigate("/"); // 追加・更新どちらの後もリスト一覧へ。ここに結果が反映されて見える
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "投稿の保存に失敗しました");
     } finally {
@@ -71,10 +78,10 @@ export function PostForm() {
     <>
       <Header />
       <main className="page">
-        <h1 style={{ fontSize: 24, marginBottom: 20 }}>{isEdit ? "投稿を編集" : "アイデアのタネをまく"}</h1>
+        <h1 style={{ fontSize: 24, marginBottom: 20 }}>{isEdit ? "投稿を編集" : "リストに追加"}</h1>
         <form onSubmit={handleSubmit} className="form">
           <label className="field">
-            タイトル
+            実現・挑戦・やってみたいこと
             <input
               type="text"
               value={title}
@@ -84,17 +91,16 @@ export function PostForm() {
             />
           </label>
           <label className="field">
-            本文
+            コメント(任意)
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
               onPaste={resyncAfterPaste(setBody)}
-              required
               rows={6}
             />
           </label>
           <fieldset className="tag-fieldset">
-            <legend>タグ</legend>
+            <legend>タグ(必須)</legend>
             <div className="filter-row" style={{ marginBottom: 0 }}>
               {tags.map((tag) => (
                 <button
@@ -110,7 +116,7 @@ export function PostForm() {
           </fieldset>
           {error && <p className="error-text">{error}</p>}
           <button type="submit" className="btn btn-primary btn-fit" disabled={submitting}>
-            {submitting ? "保存中..." : isEdit ? "更新" : "タネをまく"}
+            {submitting ? "保存中..." : isEdit ? "更新" : "追加"}
           </button>
         </form>
       </main>

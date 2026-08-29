@@ -16,7 +16,7 @@ const REACTION_COUNTS_FILTER = REACTION_TYPES.map(
 // - reaction_counts: 相関サブクエリなので、上のtags集約(GROUP BY)には影響しない
 const SELECT_POST_DETAIL = `
   SELECT
-    p.id, p.title, p.body, p.created_at, p.updated_at,
+    p.id, p.title, p.body, p.created_at, p.updated_at, p.is_achieved, p.deleted_by_admin,
     u.id AS author_id, u.username AS author_username,
     COALESCE(
       json_agg(json_build_object('id', t.id, 'name', t.name, 'icon', t.icon))
@@ -40,6 +40,8 @@ type PostDetailRow = {
   body: string;
   created_at: Date;
   updated_at: Date;
+  is_achieved: boolean;
+  deleted_by_admin: boolean;
   author_id: number;
   author_username: string;
   tags: { id: number; name: string; icon: string }[];
@@ -56,10 +58,16 @@ function toPostDetail(row: PostDetailRow): PostDetail {
     author: { id: row.author_id, username: row.author_username },
     tags: row.tags,
     reaction_counts: row.reaction_counts,
+    is_achieved: row.is_achieved,
+    deleted_by_admin: row.deleted_by_admin,
   };
 }
 
-export async function listPosts(params: { tagId?: number }): Promise<PostDetail[]> {
+export async function listPosts(params: {
+  tagId?: number;
+  authorId?: number;
+  achievedOnly?: boolean;
+}): Promise<PostDetail[]> {
   const conditions: string[] = [];
   const values: unknown[] = [];
 
@@ -71,6 +79,15 @@ export async function listPosts(params: { tagId?: number }): Promise<PostDetail[
     conditions.push(
       `EXISTS (SELECT 1 FROM post_tags pt2 WHERE pt2.post_id = p.id AND pt2.tag_id = $${values.length})`
     );
+  }
+
+  if (params.authorId !== undefined) {
+    values.push(params.authorId);
+    conditions.push(`p.user_id = $${values.length}`);
+  }
+
+  if (params.achievedOnly) {
+    conditions.push(`p.is_achieved = true`);
   }
 
   const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -163,8 +180,18 @@ export async function updatePost(
   }
 }
 
+export async function setAchieved(id: number, achieved: boolean): Promise<void> {
+  await pool.query(`UPDATE posts SET is_achieved = $1 WHERE id = $2`, [achieved, id]);
+}
+
 export async function deletePost(id: number): Promise<void> {
   // posts を消せば、外部キーに ON DELETE CASCADE を指定しているため
   // post_tags / comments / reactions の関連行も自動で一緒に消える
   await pool.query(`DELETE FROM posts WHERE id = $1`, [id]);
+}
+
+// 管理者が他人の投稿を削除するときは、完全には消さずフラグだけ立てる(ソフトデリート)。
+// こうしておくと、投稿者本人の「リスト一覧」で「管理者により削除されました」と表示できる。
+export async function softDeleteByAdmin(id: number): Promise<void> {
+  await pool.query(`UPDATE posts SET deleted_by_admin = true WHERE id = $1`, [id]);
 }

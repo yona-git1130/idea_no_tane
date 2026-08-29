@@ -88,7 +88,12 @@ export function AccountEdit() {
           {error && <p className="error-text">{error}</p>}
           {success && <p style={{ color: "var(--accent-ink)", margin: 0 }}>更新しました。</p>}
 
-          <button type="submit" className="btn btn-primary" disabled={submitting}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={submitting}
+            style={{ alignSelf: "center" }}
+          >
             {submitting ? "保存中..." : "保存"}
           </button>
         </form>

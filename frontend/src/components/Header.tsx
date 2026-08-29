@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { SproutIcon } from "./SproutIcon";
 import { UserMenu } from "./UserMenu";
 
 export function Header() {
@@ -12,25 +11,19 @@ export function Header() {
   return (
     <header className="site-header">
       <Link to="/" className="brand">
-        <SproutIcon />
-        <span>アイデアのタネ</span>
+        <span className="brand-text">未来リスト</span>
       </Link>
       <nav>
         {user ? (
           <>
-            <Link to="/posts/new">タネをまく</Link>
-            <Link to="/">みんなのタネ</Link>
-            <Link to="/ranking">注目のタネ</Link>
+            <Link to="/posts/new">リストに追加</Link>
+            <Link to="/">私のリスト</Link>
+            <Link to="/ranking">みんなのリスト</Link>
             <UserMenu user={user} onLogout={logout} />
           </>
         ) : (
           <>
-            {!isLoginPage && !isRegisterPage && (
-              <>
-                <Link to="/">みんなのタネ</Link>
-                <Link to="/ranking">注目のタネ</Link>
-              </>
-            )}
+            {!isLoginPage && !isRegisterPage && <Link to="/ranking">みんなのリスト</Link>}
             {!isLoginPage && (
               <Link to="/login" className="btn">
                 ログイン

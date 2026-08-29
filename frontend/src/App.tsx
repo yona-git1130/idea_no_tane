@@ -5,6 +5,7 @@ import { RequireAdmin } from "./components/RequireAdmin";
 import { PostList } from "./pages/PostList";
 import { PostDetail } from "./pages/PostDetail";
 import { PostForm } from "./pages/PostForm";
+import { PostCommentEdit } from "./pages/PostCommentEdit";
 import { Ranking } from "./pages/Ranking";
 import { AdminUsers } from "./pages/AdminUsers";
 import { AccountEdit } from "./pages/AccountEdit";
@@ -33,7 +34,14 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<PostList />} />
+      <Route
+        path="/"
+        element={
+          <RequireAuth>
+            <PostList />
+          </RequireAuth>
+        }
+      />
       <Route
         path="/posts/new"
         element={
@@ -48,6 +56,14 @@ function AppRoutes() {
         element={
           <RequireAuth>
             <PostForm />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/posts/:id/edit-comment"
+        element={
+          <RequireAuth>
+            <PostCommentEdit />
           </RequireAuth>
         }
       />

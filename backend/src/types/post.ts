@@ -21,4 +21,8 @@ export type PostDetail = {
   tags: TagRow[];
   // 一覧・詳細どちらでもリアクションボタンを表示できるよう、常に含める
   reaction_counts: ReactionCounts;
+  // 「🎉達成」ボタンで自分の投稿を達成済みにできる
+  is_achieved: boolean;
+  // 管理者が「みんなのリスト」から削除した投稿かどうか(本人のリスト一覧にだけ、その旨を表示する)
+  deleted_by_admin: boolean;
 };

@@ -1,9 +1,7 @@
-// ヘッダー右端に置く、汎用的な花型アイコン。currentColorを使うので、
+// ヘッダー右端に置く、人型のユーザーアイコン。currentColorを使うので、
 // 置かれた場所の文字色(テーマの --text)にそのまま合わせられる。
-// 花びら6枚を中心の周りに60度ずつ回転させて並べ、中心に丸い花芯を重ねている。
+// 頭(円)と肩から下の胴体(弧)を組み合わせたシンプルな人物シルエット。
 export function UserIcon() {
-  const petalAngles = [0, 60, 120, 180, 240, 300];
-
   return (
     <svg
       width="18"
@@ -13,18 +11,11 @@ export function UserIcon() {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      {petalAngles.map((angle) => (
-        <ellipse
-          key={angle}
-          cx="12"
-          cy="7.4"
-          rx="2.5"
-          ry="4.4"
-          fill="currentColor"
-          transform={`rotate(${angle} 12 12)`}
-        />
-      ))}
-      <circle cx="12" cy="12" r="2" fill="currentColor" />
+      <circle cx="12" cy="8" r="4" fill="currentColor" />
+      <path
+        d="M4 20c0-4.418 3.582-8 8-8s8 3.582 8 8"
+        fill="currentColor"
+      />
     </svg>
   );
 }

@@ -80,6 +80,9 @@ export function PostDetail() {
                 <Link to={`/posts/${post.id}/edit`} className="btn-text">
                   編集
                 </Link>
+                <Link to={`/posts/${post.id}/edit-comment`} className="btn-text">
+                  コメントを編集
+                </Link>
                 <button onClick={handleDelete} className="btn btn-danger">
                   削除
                 </button>

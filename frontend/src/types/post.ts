@@ -13,4 +13,8 @@ export type Post = {
   author: { id: number; username: string };
   tags: Tag[];
   reaction_counts: ReactionCounts;
+  // 「🎉達成」ボタンで自分の投稿を達成済みにできる
+  is_achieved: boolean;
+  // 管理者が「みんなのリスト」から削除した投稿かどうか
+  deleted_by_admin: boolean;
 };
