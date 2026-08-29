@@ -66,7 +66,12 @@ export function Register() {
             autoComplete="new-password"
           />
           {error && <p className="error-text">{error}</p>}
-          <button type="submit" className="btn btn-primary" disabled={submitting}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={submitting}
+            style={{ alignSelf: "center" }}
+          >
             {submitting ? "登録中..." : "登録"}
           </button>
         </form>
