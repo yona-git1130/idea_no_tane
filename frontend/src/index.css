@@ -23,7 +23,8 @@
   --success-soft: rgba(35, 122, 75, 0.12);
   /* 「🎉達成」専用のお祝いカラー。背景・ボタンの青紫に映える明るい黄色 */
   --celebrate-card: #fffd9b;
-  --celebrate-card-soft: rgba(255, 253, 155, 0.7);
+  /* 半透明(rgba)だと背景のグラデーションが透けて見えてしまうため、不透明な色にしている */
+  --celebrate-card-soft: #fffeb9;
   --celebrate-btn: #fffda7;
   --celebrate-contrast: #4a3400;
   --shadow: 0 1px 2px rgba(20, 18, 33, 0.04), 0 4px 12px rgba(20, 18, 33, 0.05);
@@ -43,7 +44,16 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  min-height: 100vh;
+  /* ログイン/新規登録画面と同じ、紫のグラデーション+きらめきの背景をアプリ全体(ヘッダーの下)に敷く。
+     ヘッダー自体は .site-header 側で白背景を指定しているので、その上に重なって隠れる */
+  background:
+    radial-gradient(ellipse 900px 620px at 50% -8%, rgba(176, 107, 255, 0.45), transparent 68%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.95) 1px, transparent 1.6px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.7) 1px, transparent 1.6px),
+    linear-gradient(180deg, #ece6ff 0%, var(--bg) 58%);
+  background-size: auto, 64px 64px, 96px 96px, auto;
+  background-position: 0 0, 0 0, 30px 40px, 0 0;
   color: var(--text);
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
@@ -100,14 +110,17 @@ button:focus-visible {
    ヘッダー
    ========================================================================== */
 .site-header {
+  position: relative; /* 背景の星(position: fixed)より確実に前面に出すための重ね順の基準 */
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
   padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
-  background: var(--panel);
+  /* 単色にせず透明にすることで、body側の背景(ログイン画面と同じグラデーション)が
+     ヘッダーにもそのまま続いて見えるようにする。境界線もなくして継ぎ目をなくす */
+  background: transparent;
 }
 
 .site-header .brand {
@@ -124,7 +137,7 @@ button:focus-visible {
    近未来感のある可愛らしい雰囲気にする。アプリ全体のアクセント色(緑)とはあえて分けている。 */
 .brand-text {
   font-family: "Mochiy Pop One", "Hiragino Maru Gothic ProN", "Hiragino Sans", sans-serif;
-  font-size: 22px;
+  font-size: 30px;
   letter-spacing: 0.03em;
   /* グラデーション未対応ブラウザ向けのフォールバック色 */
   color: #6c63ff;
@@ -165,7 +178,8 @@ button:focus-visible {
   border-radius: 50%;
   border: 1px solid var(--border);
   background: var(--panel);
-  color: var(--text);
+  /* 人型アイコンはcurrentColorで塗っているので、ここを紫にすればアイコンも紫になる */
+  color: var(--accent-ink);
   padding: 0;
 }
 
@@ -583,12 +597,9 @@ fieldset.tag-fieldset legend {
   font-weight: 700;
   width: 32px;
   text-align: center;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.rank-number.top {
+  /* 上位・それ以外で色を分けず、順位の数字はすべて紫に統一する */
   color: var(--accent-ink);
+  font-variant-numeric: tabular-nums;
 }
 
 .rank-excerpt {
@@ -702,6 +713,37 @@ table.admin-table {
   color: var(--text);
   font-size: 15px;
   line-height: 1.6;
+}
+
+/* ==========================================================================
+   新規登録画面の、幻想的な紫グラデーション+きらめきの背景演出
+   ========================================================================== */
+.auth-hero {
+  /* 背景はbody側で全画面共通に敷いているので、ここでは画面端の星を
+     position: absolute で配置するための基準(position: relative)だけを持たせる */
+  position: relative;
+  min-height: 100vh;
+}
+
+/* ロゴの上に置く、三日月と星をあしらった円形の飾り */
+.auth-ring {
+  display: block;
+  margin: 0 auto;
+}
+
+.auth-ring circle {
+  /* 反時計回りにゆっくり回転させる(負の角度=反時計回り) */
+  animation: auth-ring-spin 30s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes auth-ring-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
 }
 
 .modal-actions {

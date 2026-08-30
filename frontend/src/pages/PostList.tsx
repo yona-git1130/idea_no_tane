@@ -52,7 +52,7 @@ export function PostList() {
     <>
       <Header />
       <main className="page">
-        <h1 style={{ fontSize: 24, marginBottom: 20 }}>私のリスト</h1>
+        <h1 style={{ fontSize: 24, marginBottom: 20, color: "var(--accent-ink)" }}>私のリスト</h1>
         <div className="filter-row">
           <button
             onClick={selectAll}

@@ -78,7 +78,9 @@ export function PostForm() {
     <>
       <Header />
       <main className="page">
-        <h1 style={{ fontSize: 24, marginBottom: 20 }}>{isEdit ? "投稿を編集" : "リストに追加"}</h1>
+        <h1 style={{ fontSize: 24, marginBottom: 20, color: "var(--accent-ink)" }}>
+          {isEdit ? "投稿を編集" : "リストに追加"}
+        </h1>
         <form onSubmit={handleSubmit} className="form">
           <label className="field">
             実現・挑戦・やってみたいこと
@@ -115,7 +117,12 @@ export function PostForm() {
             </div>
           </fieldset>
           {error && <p className="error-text">{error}</p>}
-          <button type="submit" className="btn btn-primary btn-fit" disabled={submitting}>
+          <button
+            type="submit"
+            className="btn btn-primary btn-fit"
+            disabled={submitting}
+            style={{ alignSelf: "center" }}
+          >
             {submitting ? "保存中..." : isEdit ? "更新" : "追加"}
           </button>
         </form>

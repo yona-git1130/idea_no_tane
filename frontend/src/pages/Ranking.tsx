@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "../components/Header";
 import { ReactionBar } from "../components/ReactionBar";
+import { UserIcon } from "../components/UserIcon";
 import { getRankingRequest } from "../api/ranking";
 import { deletePostRequest } from "../api/posts";
 import { listTagsRequest } from "../api/tags";
@@ -66,7 +67,7 @@ export function Ranking() {
     <>
       <Header />
       <main className="page">
-        <h1 style={{ fontSize: 24, marginBottom: 20 }}>みんなのリスト</h1>
+        <h1 style={{ fontSize: 24, marginBottom: 20, color: "var(--accent-ink)" }}>みんなのリスト</h1>
 
         <div className="filter-row">
           <button
@@ -106,7 +107,7 @@ export function Ranking() {
         <ol style={{ padding: 0, listStyle: "none", margin: 0 }}>
           {ranking.map((entry, index) => (
             <li key={entry.post_id} className={`rank-item${entry.is_achieved ? " achieved" : ""}`}>
-              <span className={`rank-number${index < 3 ? " top" : ""}`}>{index + 1}</span>
+              <span className="rank-number">{index + 1}</span>
               <div style={{ flex: 1 }}>
                 {/* 操作はできないので、リスト一覧のボタンと違いbuttonではなくバッジ(span)で表示のみ行う */}
                 {entry.is_achieved && (
@@ -145,6 +146,13 @@ export function Ranking() {
                   )}
                 </div>
                 <p className="rank-excerpt">{excerpt(entry.body)}</p>
+                <p
+                  className="card-meta"
+                  style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10 }}
+                >
+                  <UserIcon />
+                  {entry.author_username}
+                </p>
                 {/* 他人の投稿には実際に押せるリアクションボタンを表示する。
                     自分の投稿は押せないが、他の人が付けた件数は表示だけする */}
                 <ReactionBar

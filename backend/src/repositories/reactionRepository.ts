@@ -68,11 +68,13 @@ export async function getRanking(
     body: string;
     is_achieved: boolean;
     author_id: number;
+    author_username: string;
     tags: { id: number; name: string; icon: string }[];
     counts: ReactionCounts;
   }>(
     `SELECT
        p.id AS post_id, p.title, p.body, p.is_achieved, p.user_id AS author_id,
+       u.username AS author_username,
        COALESCE(
          json_agg(json_build_object('id', t.id, 'name', t.name, 'icon', t.icon))
            FILTER (WHERE t.id IS NOT NULL),
@@ -84,10 +86,11 @@ export async function getRanking(
          WHERE r.post_id = p.id
        ) AS counts
      FROM posts p
+     JOIN users u ON u.id = p.user_id
      LEFT JOIN post_tags pt ON pt.post_id = p.id
      LEFT JOIN tags t ON t.id = pt.tag_id
      ${where}
-     GROUP BY p.id
+     GROUP BY p.id, u.id
      ORDER BY (SELECT COUNT(*) FROM reactions r2 WHERE r2.post_id = p.id) DESC
      LIMIT ${limitPlaceholder}`,
     values
@@ -99,6 +102,7 @@ export async function getRanking(
     body: string;
     is_achieved: boolean;
     author_id: number;
+    author_username: string;
     tags: { id: number; name: string; icon: string }[];
     counts: ReactionCounts;
   };
@@ -110,6 +114,7 @@ export async function getRanking(
     counts: row.counts,
     is_achieved: row.is_achieved,
     author_id: row.author_id,
+    author_username: row.author_username,
     tags: row.tags,
   }));
 }

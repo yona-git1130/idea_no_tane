@@ -21,5 +21,7 @@ export type RankingEntry = {
   is_achieved: boolean;
   // リアクションボタンを押せるのは他人の投稿だけなので、本人判定に使う
   author_id: number;
+  // みんなのリストで、投稿者名をコメントとリアクションの間に表示するために使う
+  author_username: string;
   tags: RankingTag[];
 };
