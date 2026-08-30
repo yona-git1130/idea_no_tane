@@ -6,3 +6,9 @@ dist
 
 # Claude Codeのローカル設定(このマシン固有の許可設定などを含むため共有しない)
 .claude/settings.local.json
+
+# 未来リストのアプリとは無関係なファイル(PC上には残すが、GitHubの管理下からは外す)
+backend/todo-app/
+fukuoka_weather.html
+fukuoka_weather.py
+index.html
