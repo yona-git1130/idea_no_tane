@@ -5,7 +5,6 @@ import { Header } from "../components/Header";
 import { PasswordField } from "../components/PasswordField";
 import { useAuth } from "../context/AuthContext";
 import { resyncAfterPaste } from "../utils/pasteSync";
-import { ApiError } from "../api/client";
 
 export function Login() {
   const { login } = useAuth();
@@ -22,9 +21,12 @@ export function Login() {
     try {
       await login(email, password);
       navigate("/"); // ログイン成功後はトップページへ
-    } catch (err) {
-      // ApiError ならバックエンドが返したメッセージをそのまま表示、それ以外は汎用メッセージ
-      setError(err instanceof ApiError ? err.message : "ログインに失敗しました");
+    } catch {
+      // バックエンドは「メールかパスワードのどちらが違うか」を教えない(セキュリティ上の理由)ので、
+      // 画面側でも「未登録かもしれない」ことが伝わる案内文をまとめて表示する
+      setError(
+        "メールアドレスまたはパスワードが正しくありません。\nアカウントをお持ちでない方は、新規登録をお願いします。"
+      );
     } finally {
       setSubmitting(false);
     }
@@ -54,7 +56,7 @@ export function Login() {
             required
             autoComplete="current-password"
           />
-          {error && <p className="error-text">{error}</p>}
+          {error && <p className="error-text" style={{ whiteSpace: "pre-line" }}>{error}</p>}
           <button
             type="submit"
             className="btn btn-primary"

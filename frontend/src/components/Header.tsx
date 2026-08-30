@@ -25,13 +25,17 @@ export function Header() {
           <>
             {!isLoginPage && !isRegisterPage && <Link to="/ranking">みんなのリスト</Link>}
             {!isLoginPage && (
-              <Link to="/login" className="btn">
+              // 新規登録画面では、登録ボタンと同じ紫(btn-primary)で目立たせる
+              <Link to="/login" className={isRegisterPage ? "btn btn-primary" : "btn"}>
                 ログイン
               </Link>
             )}
-            <Link to="/register" className="btn btn-primary">
-              新規登録
-            </Link>
+            {/* 新規登録画面では、自分自身へのリンクになるので表示しない */}
+            {!isRegisterPage && (
+              <Link to="/register" className="btn btn-primary">
+                新規登録
+              </Link>
+            )}
           </>
         )}
       </nav>

@@ -46,6 +46,8 @@ export function PostList() {
     setAchievedOnly(true);
   }
 
+  const selectedTag = tags.find((tag) => tag.id === selectedTagId);
+
   return (
     <>
       <Header />
@@ -77,7 +79,15 @@ export function PostList() {
 
         {loading && <p className="muted-text">読み込み中...</p>}
         {error && <p className="error-text">{error}</p>}
-        {!loading && !error && posts.length === 0 && <p className="empty-text">投稿がまだありません。</p>}
+        {!loading && !error && posts.length === 0 && (
+          <p className="empty-text">
+            {achievedOnly
+              ? "達成した投稿がまだありません。"
+              : selectedTag
+                ? `${selectedTag.name}の投稿がまだありません。`
+                : "リストに追加をするとこちらに表示されます"}
+          </p>
+        )}
         {posts.map((post) => (
           <PostCard key={post.id} post={post} />
         ))}
