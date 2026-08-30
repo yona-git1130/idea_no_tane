@@ -39,42 +39,42 @@ export function Login() {
       <Star
         size={20}
         color="var(--accent)"
-        style={{ position: "absolute", left: "4%", top: "10%", transform: "rotate(0deg)" }}
+        style={{ position: "absolute", left: "4%", top: "10%", transform: "rotate(0deg)", zIndex: -1, pointerEvents: "none" }}
       />
       <Star
         size={13}
         color="var(--accent-hover)"
-        style={{ position: "absolute", left: "18%", top: "6%", transform: "rotate(10deg)" }}
+        style={{ position: "absolute", left: "18%", top: "6%", transform: "rotate(10deg)", zIndex: -1, pointerEvents: "none" }}
       />
       <Star
         size={22}
         color="var(--accent)"
-        style={{ position: "absolute", left: "28%", top: "18%", transform: "rotate(20deg)" }}
+        style={{ position: "absolute", left: "28%", top: "18%", transform: "rotate(20deg)", zIndex: -1, pointerEvents: "none" }}
       />
       <Star
         size={16}
         color="var(--accent-ink)"
-        style={{ position: "absolute", left: "14%", top: "28%", transform: "rotate(30deg)" }}
+        style={{ position: "absolute", left: "14%", top: "28%", transform: "rotate(30deg)", zIndex: -1, pointerEvents: "none" }}
       />
       <Star
         size={15}
         color="var(--accent-hover)"
-        style={{ position: "absolute", right: "5%", top: "20%", transform: "rotate(40deg)" }}
+        style={{ position: "absolute", right: "5%", top: "20%", transform: "rotate(40deg)", zIndex: -1, pointerEvents: "none" }}
       />
       <Star
         size={18}
         color="var(--accent)"
-        style={{ position: "absolute", right: "17%", top: "9%", transform: "rotate(50deg)" }}
+        style={{ position: "absolute", right: "17%", top: "9%", transform: "rotate(50deg)", zIndex: -1, pointerEvents: "none" }}
       />
       <Star
         size={22}
         color="var(--accent-hover)"
-        style={{ position: "absolute", right: "27%", top: "23%", transform: "rotate(60deg)" }}
+        style={{ position: "absolute", right: "27%", top: "23%", transform: "rotate(60deg)", zIndex: -1, pointerEvents: "none" }}
       />
       <Star
         size={11}
         color="var(--accent)"
-        style={{ position: "absolute", right: "13%", top: "30%", transform: "rotate(70deg)" }}
+        style={{ position: "absolute", right: "13%", top: "30%", transform: "rotate(70deg)", zIndex: -1, pointerEvents: "none" }}
       />
       <main className="page" style={{ maxWidth: 420 }}>
         {/* ヘッダーは表示せず、新規登録画面と同様にロゴを中央に配置した専用のレイアウトにする */}

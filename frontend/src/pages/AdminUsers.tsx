@@ -89,7 +89,7 @@ export function AdminUsers() {
     <>
       <Header />
       <main className="page wide">
-        <h1 style={{ fontSize: 24, marginBottom: 20 }}>ユーザー管理</h1>
+        <h1 style={{ fontSize: 24, marginBottom: 20, color: "var(--accent-ink)" }}>ユーザー管理</h1>
 
         {loading && <p className="muted-text">読み込み中...</p>}
         {error && <p className="error-text">{error}</p>}

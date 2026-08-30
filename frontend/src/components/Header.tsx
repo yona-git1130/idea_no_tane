@@ -7,7 +7,6 @@ import { Star } from "./Star";
 // position: fixed で画面基準にするので、Headerがどのページで使われても同じ見え方になる。
 const HEADER_STARS: { size: number; color: string; top: string; left?: string; right?: string }[] = [
   { size: 20, color: "var(--accent)", left: "4%", top: "10%" },
-  { size: 13, color: "var(--accent-hover)", left: "18%", top: "6%" },
   { size: 22, color: "var(--accent)", left: "28%", top: "18%" },
   { size: 16, color: "var(--accent-ink)", left: "14%", top: "28%" },
   { size: 15, color: "var(--accent-hover)", right: "5%", top: "20%" },

@@ -148,6 +148,11 @@ button:focus-visible {
   text-shadow: 0 0 14px rgba(120, 100, 255, 0.35);
 }
 
+/* ヘッダー(ログイン後の画面)のロゴだけは、ぼかし(text-shadow)を外してすっきり見せる */
+.site-header .brand-text {
+  text-shadow: none;
+}
+
 .site-header nav {
   display: flex;
   gap: 16px;
@@ -158,11 +163,11 @@ button:focus-visible {
 
 .site-header nav a {
   text-decoration: none;
-  color: var(--text);
+  color: var(--accent-ink);
 }
 
 .site-header nav a:hover {
-  color: var(--accent-ink);
+  color: var(--accent-hover);
 }
 
 .user-menu {
@@ -208,7 +213,7 @@ button:focus-visible {
   margin-bottom: 4px;
   border-bottom: 1px solid var(--border);
   font-size: 12px;
-  color: var(--muted);
+  color: var(--accent-ink);
   white-space: nowrap;
 }
 
@@ -219,7 +224,7 @@ button:focus-visible {
   border: none;
   border-radius: 6px;
   background: none;
-  color: var(--text);
+  color: var(--accent-ink);
   text-decoration: none;
   text-align: left;
   font-size: 14px;
@@ -684,6 +689,14 @@ table.admin-table {
 
   .card {
     padding: 14px;
+  }
+
+  /* スマホ幅では、ロゴの下に折り返したnavを幅いっぱいまで広げ、
+     リンク3つ(リストに追加・私のリスト・みんなのリスト)とユーザーアイコンを左右均等に配置する。
+     アイコンは並び順そのまま(一番右)にする */
+  .site-header nav {
+    width: 100%;
+    justify-content: space-between;
   }
 }
 
